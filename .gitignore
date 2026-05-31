@@ -1,0 +1,14 @@
+data/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+*.sav
+*.dta
+*.sas7bdat
+*.por
+.ipynb_checkpoints/
+.claude/
