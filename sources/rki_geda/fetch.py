@@ -1,117 +1,62 @@
-"""Fetch RKI GEDA aggregate results from the Journal of Health Monitoring.
+"""Fetch RKI GEDA (Gesundheit in Deutschland aktuell) results.
 
-Two access tiers:
-  1. Aggregate tables — freely available as PDF/HTML from RKI (no DUA).
-     fetch() returns these aggregate statistics as a DataFrame.
-  2. Microdata — requires RKI FDZ data-use agreement.
-     Place downloaded .sav files in data/rki_geda/ and fetch() loads them.
+Free path (default): the RKI publishes aggregated GEDA 2019/2020-EHIS results as
+open data on GitHub (CC BY 4.0) — prevalences by Bundesland, sex, age group and
+education for every indicator, including smoking (RCstatE_k3) and passive
+smoking (RCpass4B_k2). This is downloaded automatically.
 
-FDZ application: https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html
+Microdata (all waves) require a data-use agreement with the RKI FDZ; see the
+error message raised by ``fetch(microdata=True)``.
 """
 from __future__ import annotations
 import pathlib
 
 import pandas as pd
-
+import requests
 
 _SOURCE_ID = "rki_geda"
+_CSV_URL = ("https://raw.githubusercontent.com/robert-koch-institut/Gesundheit_in_Deutschland_Aktuell/"
+            "main/Gesundheit_in_Deutschland_aktuell_-_2019-2020-EHIS.csv")
+LANDING_URL = "https://github.com/robert-koch-institut/Gesundheit_in_Deutschland_Aktuell"
+FDZ_URL = "https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html"
 
-# Journal of Health Monitoring — most recent GEDA smoking article
-# RKI 2025: URL structure changed from /EN/Content/ to /DE/Aktuelles/Publikationen/
-# Articles no longer embed HTML tables; scraping not possible from these URLs.
-_FACT_SHEET_URLS = {
-    "2025": (
-        "https://www.rki.de/DE/Aktuelles/Publikationen/Journal-of-Health-Monitoring/"
-        "GBEDownloadsJ/Focus/JHealthMonit_2025_01_Adipositas_Rauchen.html"
-    ),
+TOBACCO_VARIABLES = {
+    "RCstatE_k3": "Aktuell Raucher/-in (täglich oder gelegentlich), Anteil in %",
+    "RCpass4B_k2": "Passivrauchbelastung (Nichtrauchende), Anteil in %",
 }
 
-_FDZ_INSTRUCTIONS = """\
-GEDA microdata requires a data-use agreement with the RKI FDZ.
 
-Steps:
-  1. Apply at: https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html
-  2. Download SPSS (.sav) files for desired wave(s)
-  3. Place in: {cache_dir}/
-     e.g. {cache_dir}/geda_2022_2023.sav
-  4. Re-run fetch("rki_geda")
+def fetch(cache_dir: str = "data/", tobacco_only: bool = True, microdata: bool = False,
+          refresh: bool = False) -> pd.DataFrame:
+    """Return GEDA 2019/2020 aggregated results as a DataFrame.
 
-Aggregate fact sheets (no DUA) are available at:
-  https://www.rki.de/EN/Content/Health_Monitoring/Journal_of_Health_Monitoring/Journal_node.html
-"""
-
-
-def fetch(cache_dir: str = "data/", tier: str = "auto") -> pd.DataFrame:
-    """Return GEDA smoking data.
-
-    tier="auto"  — load microdata if present, else fall back to aggregates
-    tier="micro" — load microdata only (raise if not found)
-    tier="agg"   — load aggregate fact-sheet tables only
+    Columns: Altersgruppe, Bildungsgruppe, Gender, Frequency, Freq_ges, Percent,
+    LowerCL, UpperCL, Bundesland, Standard (0 observed / 1 age-standardized),
+    Variable, BundeslandId, Bundesland_Klassifikation.
     """
     cache = pathlib.Path(cache_dir) / _SOURCE_ID
     cache.mkdir(parents=True, exist_ok=True)
-
-    sav_files = sorted(cache.glob("*.sav"))
-
-    if tier in ("auto", "micro") and sav_files:
-        return _load_microdata(sav_files)
-
-    if tier == "micro" and not sav_files:
-        raise FileNotFoundError(
-            _FDZ_INSTRUCTIONS.format(cache_dir=cache)
+    if microdata:
+        raise RuntimeError(
+            "GEDA microdata require a data-use agreement with the RKI research data centre.\n"
+            f"  1. Apply at {FDZ_URL}\n"
+            "  2. Analyse via remote access / on site (no file transfer)\n"
+            "  3. Aggregated open-data results are available without agreement: fetch('rki_geda')"
         )
-
-    # Aggregate tier
-    return _fetch_aggregates(cache)
-
-
-def _load_microdata(sav_files: list[pathlib.Path]) -> pd.DataFrame:
-    import pyreadstat
-    frames = []
-    for f in sav_files:
-        df, _meta = pyreadstat.read_sav(str(f), apply_value_formats=True)
-        df["source_id"] = _SOURCE_ID
-        df["geographic_level"] = "germany"
-        df["wave_file"] = f.stem
-        frames.append(df)
-    return pd.concat(frames, ignore_index=True)
-
-
-def _fetch_aggregates(cache: pathlib.Path) -> pd.DataFrame:
-    import io
-    import requests
-    frames = []
-    for year, url in _FACT_SHEET_URLS.items():
-        try:
-            resp = requests.get(url, timeout=30)
-            resp.raise_for_status()
-            tables = pd.read_html(io.StringIO(resp.text), decimal=",")
-            if tables:
-                df = max(tables, key=len)
-                df["source_id"] = _SOURCE_ID
-                df["geographic_level"] = "germany"
-                df["wave_year"] = year
-                frames.append(df)
-        except Exception:
-            continue
-    if frames:
-        return pd.concat(frames, ignore_index=True)
-
-    # RKI articles no longer embed HTML tables — point to microdata and GBE portal
-    raise RuntimeError(
-        "GEDA aggregate tables cannot be scraped from the current RKI website.\n\n"
-        "Options:\n"
-        "  A. Microdata (DUA required):\n"
-        + _FDZ_INSTRUCTIONS.format(cache_dir=cache)
-        + "\n  B. GBE portal (interactive):\n"
-        "     https://www.gbe.rki.de/DE/Themen/EinflussfaktorenAufDieGesundheit/"
-        "GesundheitsUndRisikoverhalten/Tabakkonsum/Rauchen/rauchen_node.html\n"
-        "\n  C. Latest article (2003–2023 trends):\n"
-        + list(_FACT_SHEET_URLS.values())[-1]
-    )
+    path = cache / "geda_2019_2020_ehis_open_data.csv"
+    if refresh or not path.exists():
+        resp = requests.get(_CSV_URL, timeout=120)
+        resp.raise_for_status()
+        path.write_bytes(resp.content)
+    df = pd.read_csv(path, sep=None, engine="python")
+    if tobacco_only:
+        df = df[df["Variable"].isin(TOBACCO_VARIABLES)].copy()
+        df["Variable_Label"] = df["Variable"].map(TOBACCO_VARIABLES)
+    df["source_id"] = _SOURCE_ID
+    return df.reset_index(drop=True)
 
 
 if __name__ == "__main__":
     result = fetch()
-    print(result.head(5).to_string())
-    print(f"\n{len(result)} rows")
+    print(result.head(10).to_string())
+    print(f"\n{len(result)} rows, {len(result.columns)} columns")

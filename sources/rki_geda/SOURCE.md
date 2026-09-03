@@ -19,9 +19,9 @@ tobacco_topics:
 years_available: [2009, 2010, 2012, 2015, 2020, 2023]
 status: active
 update_frequency: biennial
-data_format: spss
-access_method: rki_fdz
-license: "RKI data-use agreement"
+data_format: csv_aggregates__spss_microdata
+access_method: open_data_aggregates__microdata_fdz
+license: "CC BY 4.0 (aggregates); RKI data-use agreement (microdata)"
 language: de
 fdz_url: "https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html"
 aggregate_reports_url: "https://www.rki.de/EN/Content/Health_Monitoring/Journal_of_Health_Monitoring/Journal_node.html"
@@ -36,8 +36,10 @@ notes: >
   Germany's flagship adult health survey. Representative sample of ~23,000–33,000
   adults. Microdata access requires formal data-use agreement (Datennutzungsvertrag)
   with the RKI FDZ; analysis via remote desktop or on-site.
-  Aggregate results are freely published in the Journal of Health Monitoring
-  (open-access PDF/HTML) — the fetch.py retrieves these without a DUA.
+  Aggregated GEDA 2019/2020-EHIS results (prevalence by Bundesland, sex, age,
+  education incl. smoking RCstatE_k3 and passive smoking RCpass4B_k2) are open data
+  on GitHub (CC BY 4.0) — fetch.py downloads them without a DUA. The harmonized
+  dataset takes these values via rki_gbe_ncd / rki_diabetes_surveillance.
   Bavaria possible in FDZ microdata (small n per Bundesland ~1,500–2,000).
   Munich not possible — no city-level geography in microdata.
   E-cigarette variables from 2019/20 onward; HTP from 2022/23.

@@ -48,3 +48,12 @@ def _load_module(source_id: str, path: pathlib.Path):
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def load_source_module(source_id: str, name: str = "fetch"):
+    """Import ``sources/<source_id>/<name>.py`` under a unique module name.
+
+    Extractors use this instead of ``from fetch import ...`` so that the
+    sibling ``fetch.py`` files of different sources never shadow each other.
+    """
+    return _load_module(f"{source_id}_{name}", _ROOT / "sources" / source_id / f"{name}.py")

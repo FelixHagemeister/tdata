@@ -1,0 +1,706 @@
+[
+ {
+  "id": "bgs_bayern",
+  "name": "Bayerische Gesundheitsstudie (BGS) — LGL Bayern",
+  "provider": "Bayerisches Landesamt für Gesundheit und Lebensmittelsicherheit (LGL)",
+  "url": "https://www.lgl.bayern.de/gesundheit/gesundheitsberichterstattung/gesundheitsstudien/",
+  "geographic_level": "bavaria",
+  "population": "adults_18plus",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "smoking_initiation_age",
+   "passive_smoking",
+   "quit_attempts",
+   "e-cigarette_use",
+   "waterpipe_use"
+  ],
+  "years_available": [
+   2015,
+   2022
+  ],
+  "status": "active",
+  "update_frequency": "biennial",
+  "data_format": "pdf",
+  "access_method": "pdf_or_lgl_agreement",
+  "license": "PDF reports: free; microdata: LGL data-use agreement",
+  "language": "de",
+  "reports_url": "https://www.lgl.bayern.de/gesundheit/gesundheitsberichterstattung/gesundheitsberichte/",
+  "sample_questions": [
+   "What is the smoking prevalence among adults in Bavaria?",
+   "How has Bavarian smoking changed from 2015 to 2022?",
+   "What share of Bavarian adults have tried e-cigarettes?"
+  ],
+  "fetch_script": "sources/bgs_bayern/fetch.py",
+  "notes": "The primary source of individual-level tobacco data for Bavaria. Published PDF reports freely available. Microdata held internally by LGL; formal data-use agreement with LGL Bayern required for access. Contact: gesundheitsberichterstattung@lgl.bayern.de District-level breakdowns not published (sample sizes too small); Regierungsbezirk-level may appear in some tables. Underlying data source for the Gesundheitsatlas Bayern district maps. E-cigarette variables added in Wave 2 (2021/22).",
+  "in_dataset": true,
+  "dataset_rows": 17
+ },
+ {
+  "id": "bzga_drogenaffinitaet",
+  "name": "BZgA Drogenaffinitätsstudie — Jugendliche und junge Erwachsene",
+  "provider": "Bundeszentrale für gesundheitliche Aufklärung (BZgA)",
+  "url": "https://www.bzga.de/forschung/studien-untersuchungen/studien/suchtpraevention/",
+  "geographic_level": "germany",
+  "population": "youth_and_young_adults",
+  "age_range": [
+   12,
+   25
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "smoking_initiation_age",
+   "cigarettes_per_day",
+   "product_type",
+   "e-cigarette_use",
+   "waterpipe_use",
+   "nicotine_pouches",
+   "perceived_smoking_risk",
+   "attitudes_toward_smoking"
+  ],
+  "years_available": [
+   1973,
+   1976,
+   1979,
+   1982,
+   1986,
+   1990,
+   1993,
+   1997,
+   2001,
+   2004,
+   2008,
+   2011,
+   2014,
+   2016,
+   2018,
+   2019,
+   2021
+  ],
+  "status": "active",
+  "update_frequency": "irregular",
+  "data_format": "spss",
+  "access_method": "gesis_agreement",
+  "license": "GESIS Datenweitergabevertrag (free, no fee)",
+  "language": "de",
+  "gesis_series": "ZA3580",
+  "pdf_reports_url": "https://www.bzga.de/infomaterialien/alkohol-tabak-drogen/",
+  "sample_questions": [
+   "What share of 12-17 year olds in Germany currently smoke?",
+   "At what age do young Germans typically start smoking?",
+   "How has e-cigarette use among young people changed since 2014?",
+   "What is the trend in youth smoking rates since the 1970s?"
+  ],
+  "fetch_script": "sources/bzga_drogenaffinitaet/fetch.py",
+  "notes": "Longest-running youth tobacco survey in Germany — data back to 1973. n ≈ 3,000–7,000 per wave. PDF reports freely available. Microdata archived at GESIS (series ZA3580); requires a standard Datenweitergabevertrag (free, submit project description + signed form). E-cigarette variables from ~2014; nicotine pouches in most recent waves. Bavaria subsample possible in microdata (n ~150–300 per wave).",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "bzga_rauchverhalten",
+  "name": "BZgA — Rauchverhalten der Bevölkerung in Deutschland",
+  "provider": "Bundeszentrale für gesundheitliche Aufklärung (BZgA)",
+  "url": "https://www.bzga.de/infomaterialien/alkohol-tabak-drogen/tabak/",
+  "geographic_level": "germany",
+  "population": "adults_14plus",
+  "age_range": [
+   14,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "e-cigarette_use",
+   "heated_tobacco_products",
+   "quit_attempts",
+   "cessation_aid_use",
+   "passive_smoking"
+  ],
+  "years_available": [
+   1997,
+   2003,
+   2007,
+   2010,
+   2012,
+   2013,
+   2014,
+   2016,
+   2018,
+   2021
+  ],
+  "status": "active",
+  "update_frequency": "irregular",
+  "data_format": "pdf",
+  "access_method": "direct_download",
+  "license": "free (PDF reports)",
+  "language": "de",
+  "sample_questions": [
+   "What share of adults in Germany smoke daily?",
+   "How has adult smoking changed since 1997?",
+   "What cessation aids are used by German smokers trying to quit?",
+   "What is the trend in e-cigarette use among German adults?"
+  ],
+  "fetch_script": "sources/bzga_rauchverhalten/fetch.py",
+  "notes": "Adult counterpart to the Drogenaffinitätsstudie. PDF reports freely downloadable. Microdata archival status at GESIS is unconfirmed; contact forschung@bzga.de for microdata access. Heated tobacco product variables from ~2018. National sample only — Bavaria and Munich breakdowns not available.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "debra",
+  "name": "DEBRA — Deutsche Befragung zum Rauchverhalten",
+  "provider": "Universität Leipzig / Kantar",
+  "url": "https://www.debra-studie.de",
+  "geographic_level": "germany",
+  "population": "adults_14plus",
+  "age_range": [
+   14,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "e-cigarette_use",
+   "heated_tobacco_products",
+   "quit_attempts",
+   "quit_intention",
+   "cessation_aid_use"
+  ],
+  "years_available_continuous": "2016-present",
+  "update_frequency": "monthly",
+  "data_format": "pdf",
+  "access_method": "pdf_or_dua",
+  "license": "PDF reports: free; microdata: case-by-case agreement",
+  "language": "de",
+  "sample_questions": [
+   "What is the current quit intent rate among German smokers?",
+   "How many German smokers are currently trying to quit?",
+   "What cessation aids are being used by German smokers?",
+   "What is the monthly trend in e-cigarette use in Germany?"
+  ],
+  "fetch_script": "sources/debra/fetch.py",
+  "notes": "Monthly cross-sectional telephone survey (~2,000 respondents/month), running since January 2016. Best source for temporal granularity on quit intent and cessation behavior. Aggregate trend data in annual PDF reports and peer-reviewed articles (Suchtmedizin, Addiction, Tobacco Control). Microdata not in any public repository — case-by-case agreement with University of Leipzig PI. Contact: info@debra-studie.de National sample only; Bavaria/Munich estimates unreliable without aggregating multiple months.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "destatis_mikrozensus",
+  "name": "Mikrozensus — Rauchgewohnheiten der Bevölkerung (Destatis)",
+  "provider": "Statistisches Bundesamt (Destatis)",
+  "url": "https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Gesundheit/Gesundheitsverhalten-Risikofaktoren/Tabellen/rauchverhalten-mikrozensus.html",
+  "geographic_level": "germany",
+  "population": "adults_15plus",
+  "age_range": [
+   15,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "smoking_initiation_age",
+   "ex_smoker_cessation_duration"
+  ],
+  "years_available": [
+   1999,
+   2003,
+   2005,
+   2009,
+   2013,
+   2017
+  ],
+  "status": "historical",
+  "update_frequency": "discontinued",
+  "data_format": "html_table",
+  "access_method": "direct_scrape",
+  "license": "dl-de/by-2-0",
+  "language": "de",
+  "sample_questions": [
+   "What share of adults in Germany smoked daily in 2017?",
+   "How has smoking prevalence changed from 2005 to 2017?",
+   "What percentage of men vs. women smoke in Germany?",
+   "How many cigarettes per day do daily smokers consume?"
+  ],
+  "fetch_script": "sources/destatis_mikrozensus/fetch.py",
+  "notes": "The health supplement of the Mikrozensus (Germany's largest annual household survey, ~800,000 persons) included smoking questions in 1999, 2003, 2005, 2009, 2013, and 2017. The smoking module was discontinued after 2017. Bavaria and Regierungsbezirk breakdowns are available in the aggregated GENESIS tables (see staba_mikrozensus). No e-cigarette variables — module discontinued before they were added. Bavarian subsample available in GENESIS Bayern (see staba_mikrozensus).",
+  "in_dataset": true,
+  "dataset_rows": 590
+ },
+ {
+  "id": "eurobarometer_tobacco",
+  "name": "Eurobarometer Special Surveys on Tobacco (EB 458 / EB 506)",
+  "provider": "European Commission (DG SANTE), archived at GESIS",
+  "url": "https://www.gesis.org/en/eurobarometer-data-service/survey-series/special-eb",
+  "geographic_level": "germany",
+  "population": "adults_15plus",
+  "age_range": [
+   15,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "product_type",
+   "e-cigarette_use",
+   "heated_tobacco_products",
+   "nicotine_pouches",
+   "quit_attempts",
+   "cessation_aid_use",
+   "smoke_free_policy_attitudes",
+   "health_warning_awareness",
+   "smoking_initiation_age"
+  ],
+  "years_available": [
+   2003,
+   2006,
+   2009,
+   2012,
+   2017,
+   2021
+  ],
+  "status": "active",
+  "update_frequency": "irregular",
+  "data_format": "spss",
+  "access_method": "gesis_download",
+  "license": "GESIS standard terms",
+  "language": "multi",
+  "gesis_ids": [
+   {
+    "id": "ZA6925",
+    "year": 2017,
+    "doi": "https://doi.org/10.4232/1.13067"
+   },
+   {
+    "id": "ZA7780",
+    "year": 2021,
+    "doi": "https://doi.org/10.4232/1.13953"
+   }
+  ],
+  "sample_questions": [
+   "What share of adults in Germany use e-cigarettes?",
+   "How many Germans have tried to quit smoking in the past 12 months?",
+   "What types of tobacco products do German smokers use?",
+   "What is the trend in heated tobacco product use in Germany?"
+  ],
+  "fetch_script": "sources/eurobarometer_tobacco/fetch.py",
+  "notes": "Free microdata access via GESIS after free user account registration (no data-use agreement, no institutional affiliation required). ~1,500 respondents in Germany per wave (cross-sectional, face-to-face). No sub-national geographic identifiers — Germany as a whole only. The 2021 wave (ZA7780) includes heated tobacco products and nicotine pouches, making it the most complete tobacco product inventory available as free microdata. Earlier waves back to 2003 are also archived at GESIS (ZA3612, ZA4141, ZA4977, ZA5652).",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "gesundheitsatlas_bayern",
+  "name": "Gesundheitsatlas Bayern — Raucherstatus (LGL Bayern)",
+  "provider": "Bayerisches Landesamt für Gesundheit und Lebensmittelsicherheit (LGL)",
+  "url": "https://www.gesundheitsatlas.bayern.de",
+  "geographic_level": "bavaria",
+  "population": "adults",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking"
+  ],
+  "years_available": [
+   2015,
+   2022
+  ],
+  "status": "active",
+  "update_frequency": "biennial",
+  "data_format": "excel",
+  "access_method": "manual_export",
+  "license": "public health data (free)",
+  "language": "de",
+  "sample_questions": [
+   "What is the smoking prevalence in Munich compared to other Bavarian districts?",
+   "Which Bavarian Landkreis has the highest smoking rate?",
+   "How does smoking prevalence vary across Bavaria's 96 districts?",
+   "What is Munich's smoking rate compared to the Bavarian average?"
+  ],
+  "fetch_script": "sources/gesundheitsatlas_bayern/fetch.py",
+  "notes": "The ONLY freely available source with district-level smoking data for all 96 Bavarian Landkreise and kreisfreie Städte — including Munich as a separate unit. High priority for the geographic cascade goal. Data derives from the Bayerische Gesundheitsstudie (BGS). Access: interactive web tool only — no bulk download or public API. Use the Atlas export button (Excel/CSV) for each indicator view, then place the file in data/gesundheitsatlas_bayern/.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "itc_germany",
+  "name": "ITC Germany / 4CV Survey — International Tobacco Control",
+  "provider": "ITC Project, University of Waterloo (Canada)",
+  "url": "https://itcproject.org/countries/germany/",
+  "geographic_level": "germany",
+  "population": "adult_smokers_and_vapers",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "cigarettes_per_day",
+   "e-cigarette_use",
+   "heated_tobacco_products",
+   "dual_use",
+   "quit_attempts",
+   "quit_intention",
+   "cessation_aid_use",
+   "health_risk_perceptions",
+   "tobacco_marketing_exposure",
+   "smoke_free_policy_attitudes",
+   "product_brand_price"
+  ],
+  "years_available": [
+   2016,
+   2018,
+   2020,
+   2022
+  ],
+  "status": "active",
+  "update_frequency": "biennial",
+  "data_format": "spss",
+  "access_method": "itc_agreement",
+  "license": "ITC Project data-use agreement (signed, ~2–6 weeks)",
+  "language": "en",
+  "data_request_url": "https://itcproject.org/resources/data/",
+  "sample_questions": [
+   "What are German smokers' perceptions of relative harm of e-cigarettes vs. cigarettes?",
+   "How do German smokers respond to tobacco policy changes?",
+   "What is the dual use rate of cigarettes and e-cigarettes in Germany?",
+   "What brand of cigarettes do German smokers use and how much do they pay?"
+  ],
+  "fetch_script": "sources/itc_germany/fetch.py",
+  "notes": "Most detailed tobacco behavioral instrument available for Germany. Online panel (Kantar/YouGov) of ~4,000 adult smokers and vapers per wave. Part of the ITC 4CV (Four Country Smoking and Vaping Survey). Requires formal data-use agreement with University of Waterloo; no fee, but ~2–6 week approval process. No sub-national geographic identifiers.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "muenchen_gesundheitsbefragung",
+  "name": "Münchner Gesundheitsbefragung — Gesundheitsreferat München",
+  "provider": "Referat für Gesundheit und Umwelt (RGU), Landeshauptstadt München",
+  "url": "https://www.muenchen.de/rathaus/stadtinfos/gesundheit/gesundheitsberichterstattung/muenchner-gesundheitsbefragung.html",
+  "geographic_level": "munich",
+  "population": "adults_18plus",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "cigarettes_per_day",
+   "e-cigarette_use",
+   "passive_smoking",
+   "quit_intention",
+   "quit_attempts"
+  ],
+  "years_available": [
+   2016,
+   2021
+  ],
+  "status": "active",
+  "update_frequency": "irregular",
+  "data_format": "pdf",
+  "access_method": "pdf_or_negotiation",
+  "license": "PDF reports: free; microdata: negotiated with Gesundheitsreferat",
+  "language": "de",
+  "sample_questions": [
+   "What is the smoking prevalence in Munich overall?",
+   "Which Munich Stadtbezirk has the highest smoking rate?",
+   "How does smoking prevalence vary across Munich's 25 urban districts?",
+   "What share of Munich adults have tried e-cigarettes?"
+  ],
+  "fetch_script": "sources/muenchen_gesundheitsbefragung/fetch.py",
+  "notes": "The ONLY source with sub-city (Stadtbezirk-level) smoking data for Munich. Covers all 25 Munich urban districts. High priority for the Munich component of the gateway. PDF reports available; microdata negotiated directly with Gesundheitsreferat München (no formal public framework — case-by-case). Contact: gesundheitsreferat@muenchen.de Stratified by age, sex, Stadtbezirk, SES, migration background. E-cigarette variables added in 2020/21 wave.",
+  "in_dataset": true,
+  "dataset_rows": 5
+ },
+ {
+  "id": "muenchen_gesundheitsbericht",
+  "name": "Münchner Gesundheitsbericht — Landeshauptstadt München",
+  "provider": "Landeshauptstadt München (LHM)",
+  "url": "https://www.muenchen.de/rathaus/stadtinfos/gesundheit/gesundheitsberichterstattung/gesundheitsberichte.html",
+  "geographic_level": "munich",
+  "population": "all",
+  "age_range": [
+   0,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "passive_smoking",
+   "smoking_related_mortality",
+   "smoking_related_hospitalizations",
+   "youth_smoking",
+   "e-cigarette_use"
+  ],
+  "years_available": [
+   2004,
+   2009,
+   2014,
+   2020
+  ],
+  "status": "active",
+  "update_frequency": "quinquennial",
+  "data_format": "pdf",
+  "access_method": "direct_download",
+  "license": "public document (free)",
+  "language": "de",
+  "sample_questions": [
+   "How does Munich's smoking prevalence compare to Bavaria and Germany?",
+   "What are the smoking-related mortality rates in Munich?",
+   "How has smoking prevalence in Munich changed over time?"
+  ],
+  "fetch_script": "sources/muenchen_gesundheitsbericht/fetch.py",
+  "notes": "Comprehensive periodic health report. PDF only — no structured data download. Synthesizes data from BGS, Mikrozensus, Münchner Gesundheitsbefragung, and administrative health records. Useful as a secondary reference and for Munich vs. Bavaria vs. Germany trend comparisons. Smoking chapter covers prevalence by age and sex, hospitalization/mortality, passive smoking, and youth tobacco. E-cigarettes mentioned in 2019/20 edition. Not a primary data source — underlying data comes from other gateway sources.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "rki_diabetes_surveillance",
+  "name": "RKI Diabetes-Surveillance — Indikator Rauchen",
+  "provider": "Robert Koch-Institut (RKI), Nationale Diabetes-Surveillance",
+  "url": "https://github.com/robert-koch-institut/Diabetes-Surveillance",
+  "doi": "10.5281/zenodo.7972384",
+  "geographic_level": "germany",
+  "granularity": "bundesland",
+  "population": "adults_and_youth",
+  "age_range": [
+   11,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "youth_smoking_initiation",
+   "smoking_trend"
+  ],
+  "years_available": [
+   2003,
+   2004,
+   2009,
+   2010,
+   2012,
+   2015,
+   2019
+  ],
+  "status": "active",
+  "update_frequency": "yearly",
+  "data_format": "tsv",
+  "access_method": "direct_download",
+  "license": "CC BY 4.0",
+  "language": "de",
+  "sample_questions": [
+   "Wie hat sich der Raucheranteil in Deutschland seit 2003 entwickelt?",
+   "Wie viele Jugendliche rauchen in Deutschland?",
+   "Rauchen nach Bildungsgruppe im Zeitverlauf"
+  ],
+  "fetch_script": "sources/rki_diabetes_surveillance/fetch.py",
+  "extract_script": "sources/rki_diabetes_surveillance/extract.py",
+  "notes": "Die Diabetes-Surveillance führt Rauchen als Risikofaktor. Erwachsene: GSTel03, GEDA 2009, 2010, 2012 und GEDA 2019/2020-EHIS (Deutschland nach Geschlecht, Alter, Bildung; 2019 zusätzlich nach Bundesland). Kinder und Jugendliche (11–17 Jahre): KiGGS-Basiserhebung 2003–2006, Welle 1 2009–2012, Welle 2 2014–2017. Telefonsurveys bis 2012 sind mit dem Mixed-Mode-Survey 2019/2020 nur eingeschränkt vergleichbar. Die Werte für 2019 werden im harmonisierten Datensatz aus rki_gbe_ncd übernommen.",
+  "in_dataset": true,
+  "dataset_rows": 155
+ },
+ {
+  "id": "rki_gbe_ncd",
+  "name": "RKI Gesundheitsberichterstattung — Indikatoren zu nichtübertragbaren Erkrankungen",
+  "provider": "Robert Koch-Institut (RKI), Gesundheitsberichterstattung des Bundes",
+  "url": "https://github.com/robert-koch-institut/Gesundheitsberichterstattung_-_Daten_zu_nichtuebertragbaren_Erkrankungen",
+  "doi": "10.5281/zenodo.13920400",
+  "geographic_level": "germany",
+  "granularity": "bundesland",
+  "population": "adults_18plus",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "passive_smoking",
+   "lung_cancer_incidence",
+   "lung_cancer_mortality",
+   "tobacco_control_policy"
+  ],
+  "years_available": [
+   1999,
+   2000,
+   2001,
+   2002,
+   2003,
+   2004,
+   2005,
+   2006,
+   2007,
+   2008,
+   2009,
+   2010,
+   2011,
+   2012,
+   2013,
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "status": "active",
+  "update_frequency": "yearly",
+  "data_format": "tsv",
+  "access_method": "direct_download",
+  "license": "CC BY 4.0",
+  "language": "de",
+  "sample_questions": [
+   "Wie hoch ist der Raucheranteil in Bayern im Vergleich zu anderen Bundesländern?",
+   "Wie unterscheidet sich das Rauchen nach Bildung, Alter und Geschlecht?",
+   "Wie hat sich die Lungenkrebs-Sterblichkeit in Bayern seit 1999 entwickelt?",
+   "Wie schneidet Deutschland auf der Tabakkontrollskala ab?"
+  ],
+  "fetch_script": "sources/rki_gbe_ncd/fetch.py",
+  "extract_script": "sources/rki_gbe_ncd/extract.py",
+  "notes": "Indikatorensatz der Gesundheitsberichterstattung des Bundes (Diabetes-, NCD- und Public-Health-Indikatoren) als offene Daten auf GitHub/Zenodo. Tabakrelevant sind Indikator 1020501 \"Rauchen (ab 18 Jahre)\" (GEDA 2019/2020-EHIS; nach Bundesland, Geschlecht, Alter, Bildung), 1020502 \"Passivrauchbelastung\", 2020306/2020309 \"Lungenkrebs: Inzidenz/Sterblichkeit\" (1999–2023 nach Bundesland, Geschlecht, Alter, regionaler Deprivation) und 4010101 \"Tabakkontrolle\" (Tobacco Control Scale 2021, Ländervergleich). Werte für Bayern verfügbar, keine Kreis- oder Stadtebene.",
+  "in_dataset": true,
+  "dataset_rows": 4037
+ },
+ {
+  "id": "rki_geda",
+  "name": "RKI GEDA — Gesundheit in Deutschland aktuell",
+  "provider": "Robert Koch-Institut (RKI)",
+  "url": "https://www.rki.de/DE/Content/Gesundheitsmonitoring/Studien/Geda/Geda_node.html",
+  "geographic_level": "germany",
+  "population": "adults_18plus",
+  "age_range": [
+   18,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "quit_attempts",
+   "quit_intention",
+   "e-cigarette_use",
+   "heated_tobacco_products",
+   "nicotine_replacement_therapy",
+   "passive_smoking"
+  ],
+  "years_available": [
+   2009,
+   2010,
+   2012,
+   2015,
+   2020,
+   2023
+  ],
+  "status": "active",
+  "update_frequency": "biennial",
+  "data_format": "csv_aggregates__spss_microdata",
+  "access_method": "open_data_aggregates__microdata_fdz",
+  "license": "CC BY 4.0 (aggregates); RKI data-use agreement (microdata)",
+  "language": "de",
+  "fdz_url": "https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html",
+  "aggregate_reports_url": "https://www.rki.de/EN/Content/Health_Monitoring/Journal_of_Health_Monitoring/Journal_node.html",
+  "sample_questions": [
+   "What share of adults in Germany smoke daily?",
+   "How many smokers attempted to quit in the past 12 months?",
+   "What is the prevalence of e-cigarette use in Germany?",
+   "How has smoking prevalence changed since 2009?",
+   "What share of adults use heated tobacco products like IQOS?"
+  ],
+  "fetch_script": "sources/rki_geda/fetch.py",
+  "notes": "Germany's flagship adult health survey. Representative sample of ~23,000–33,000 adults. Microdata access requires formal data-use agreement (Datennutzungsvertrag) with the RKI FDZ; analysis via remote desktop or on-site. Aggregated GEDA 2019/2020-EHIS results (prevalence by Bundesland, sex, age, education incl. smoking RCstatE_k3 and passive smoking RCpass4B_k2) are open data on GitHub (CC BY 4.0) — fetch.py downloads them without a DUA. The harmonized dataset takes these values via rki_gbe_ncd / rki_diabetes_surveillance. Bavaria possible in FDZ microdata (small n per Bundesland ~1,500–2,000). Munich not possible — no city-level geography in microdata. E-cigarette variables from 2019/20 onward; HTP from 2022/23.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "rki_kiggs",
+  "name": "RKI KiGGS — Studie zur Gesundheit von Kindern und Jugendlichen",
+  "provider": "Robert Koch-Institut (RKI)",
+  "url": "https://www.rki.de/DE/Content/Gesundheitsmonitoring/Studien/KiGGS/kiggs_node.html",
+  "geographic_level": "germany",
+  "population": "children_adolescents",
+  "age_range": [
+   0,
+   17
+  ],
+  "tobacco_topics": [
+   "youth_smoking_initiation",
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "smoking_initiation_age",
+   "passive_smoking",
+   "e-cigarette_use",
+   "waterpipe_use",
+   "quit_attempts",
+   "parental_smoking"
+  ],
+  "years_available": [
+   2006,
+   2012,
+   2017
+  ],
+  "status": "active",
+  "update_frequency": "irregular",
+  "data_format": "spss",
+  "access_method": "rki_fdz",
+  "license": "RKI data-use agreement (Wave 1 PUF: free registration)",
+  "language": "de",
+  "puf_url": "https://www.rki.de/DE/Content/Forsch/FDZ/Datenzugang/Public_Use_File/public_use_file_node.html",
+  "fdz_url": "https://www.rki.de/DE/Content/Forsch/FDZ/fdz_node.html",
+  "sample_questions": [
+   "At what age do German adolescents typically start smoking?",
+   "What share of 12-17 year olds in Germany have ever tried smoking?",
+   "How has youth smoking changed between 2006 and 2017?",
+   "What is the prevalence of passive smoking exposure among children?"
+  ],
+  "fetch_script": "sources/rki_kiggs/fetch.py",
+  "notes": "Longitudinal cohort + cross-sectional design. Wave 1 Public Use File (PUF) is freely downloadable after free online registration at RKI FDZ — no formal data-use agreement needed. Geography is coarsened to East/West in the PUF. Full microdata (Baseline and Wave 2) requires FDZ agreement. E-cigarette variables only from Wave 2 (2014–2017) onward. Cohort linkage (Wave 1 → Wave 2) allows longitudinal smoking onset analysis.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ },
+ {
+  "id": "staba_mikrozensus",
+  "name": "Mikrozensus Bayern — Rauchgewohnheiten (StaBa Bayern)",
+  "provider": "Bayerisches Landesamt für Statistik (StaBa Bayern)",
+  "url": "https://www.statistikdaten.bayern.de/genesis/",
+  "geographic_level": "bavaria",
+  "population": "adults_15plus",
+  "age_range": [
+   15,
+   99
+  ],
+  "tobacco_topics": [
+   "smoking_prevalence",
+   "daily_vs_occasional_smoking",
+   "cigarettes_per_day",
+   "smoking_initiation_age"
+  ],
+  "years_available": [
+   2009,
+   2013,
+   2017
+  ],
+  "status": "historical",
+  "update_frequency": "discontinued",
+  "data_format": "excel",
+  "access_method": "manual_download",
+  "license": "dl-de/by-2-0",
+  "language": "de",
+  "sample_questions": [
+   "What share of adults in Bavaria smoked daily in 2017?",
+   "How has smoking prevalence changed in Bavaria from 2009 to 2017?",
+   "How does Bavarian smoking prevalence compare to the national average?"
+  ],
+  "fetch_script": "sources/staba_mikrozensus/fetch.py",
+  "notes": "Bavaria-specific slice of the national Mikrozensus, available via GENESIS Bayern. Covers all 7 Regierungsbezirke. Smoking questions were dropped after 2017. Complements destatis_mikrozensus; use this source when Bavaria or sub-Bavaria geography is required. Munich (Landeshauptstadt) may appear as a separate unit in some tables.",
+  "in_dataset": false,
+  "dataset_rows": 0
+ }
+]

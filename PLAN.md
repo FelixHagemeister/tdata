@@ -1,221 +1,102 @@
 # Tobacco Data Gateway — Project Plan
 
+*Revised 2026-09-02. The original v0.1 plan (a source catalogue plus Python package) is kept as
+Phases 1–3 below; Phases 4–5 add the harmonized dataset and the public web interface that the
+project goal requires.*
+
 ## Goal
 
-A public GitHub repository that gives researchers, think tanks, and advocacy
-organizations a single, well-structured entry point to publicly available
-tobacco-related data for **Munich → Bavaria → Germany** (in order of
-geographic preference).
+A public GitHub repository and website that give researchers, think tanks, advocacy organizations
+and journalists a single, well-structured entry point to publicly available tobacco-related data for
+**Munich → Bavaria → Germany**, across socio-demographic (sex, age, education, further attributes),
+geographic (city, state, region, country) and time dimensions — with usable results **as text and
+graphs on a web interface**, and machine-readable for AI agents.
 
-The repository should be usable by both humans and AI agents: a human can
-browse source documentation and run a script; an agent can read structured
-metadata to decide which dataset answers a given question, then call the
-appropriate fetch function.
+## Decisions (interview 2026-09-02)
 
----
+| Question | Decision | Consequence |
+|---|---|---|
+| Web stack | Static site on GitHub Pages (`docs/`) | No server; JSON files double as an API; charts and question engine run in the browser |
+| Data in repo | Curated aggregate dataset is committed (`dataset/indicators.csv`) | Every row cites source, table/page and data status; raw microdata stays out (`data/` gitignored) |
+| Interface language | German | Indicator labels, answer texts and UI in German; ids and code in English |
+| Answer engine | Deterministic (keyword parsing + templates), no LLM in v1 | Works offline on a static page; no invented numbers; an LLM layer can be added later on the same data contract |
 
 ## Guiding principles
 
 | Principle | Implication |
 |---|---|
-| Publicly available data only | No sources requiring data-use agreements in v1 |
-| No raw data in the repo | Scripts fetch from authoritative sources on demand |
-| Geographic cascade | Prefer Munich data; fall back to Bavaria, then Germany |
-| Tobacco scope | Cigarettes, e-cigarettes, heated tobacco products (HTP) |
-| Time horizon | Past 10 years (~2015–present) |
-| Language | Python |
-| Solo-maintained | Keep structure simple; avoid over-engineering |
+| Publicly available data only | Sources with data-use agreements are documented, their values not reproduced |
+| No raw data in the repo; curated aggregates yes | `data/` is a gitignored cache; `dataset/indicators.csv` holds published figures with citations |
+| Never mix surveys silently | Different surveys (Mikrozensus 15+, GEDA 18+, telephone surveys ≤ 2012) are separate series with notes |
+| Geographic cascade | Prefer Munich, fall back to Bavaria, then Germany |
+| Tobacco scope | Cigarettes, e-cigarettes, heated tobacco, plus consequences (lung cancer) and policy (tobacco control scale) |
+| Language | Python for data and package; vanilla JS for the site (no build step, no dependencies) |
+| Solo-maintained | Simple structure; tests and a monthly refresh workflow catch upstream changes |
 
----
+## Architecture
+
+```
+sources/<id>/fetch.py  ──►  data/ (cache)  ──►  sources/<id>/extract.py ─┐
+sources/<id>/curated.csv (figures transcribed from PDFs, with page refs) ─┤
+                                                                          ▼
+                     scripts/build_dataset.py  ──►  tobacco_gateway.schema.validate
+                                                                          │
+              ┌───────────────────────────────────────────────────────────┤
+              ▼                                                           ▼
+   dataset/indicators.csv (canonical, tracked)            docs/data/{indicators,catalog,sources}.json
+   tobacco_gateway.indicators: load / select / answer     docs/engine.js (same rules) + docs/app.js (UI)
+```
+
+The harmonized schema (`tobacco_gateway/schema.py`) is the contract shared by extractors, package,
+tests and website. One row = one published value with all dimensions and a citation.
 
 ## Repository structure
 
-```
-tobacco-data-gateway/
-│
-├── README.md                  # Project overview, quick-start, source index
-├── PLAN.md                    # This file
-│
-├── sources/                   # One folder per data source
-│   ├── INDEX.md               # Machine- and human-readable index of all sources
-│   ├── rki_geda/
-│   │   ├── SOURCE.md          # Structured metadata (see schema below)
-│   │   └── fetch.py           # Download + normalize this source
-│   ├── bzga_youth_tobacco/
-│   │   ├── SOURCE.md
-│   │   └── fetch.py
-│   └── ...
-│
-├── tobacco_gateway/           # Installable Python package
-│   ├── __init__.py
-│   ├── fetch.py               # fetch(source_id, ...) dispatcher
-│   ├── normalize.py           # shared normalization utilities
-│   └── query.py               # helper: "which sources answer this question?"
-│
-├── notebooks/
-│   └── example_queries.ipynb  # Worked examples (e.g. e-cig trend, quit intent)
-│
-├── scripts/
-│   └── fetch_all.py           # Bulk download all sources to local cache
-│
-├── data/                      # gitignored — local cache of downloaded data
-│
-├── pyproject.toml
-└── .gitignore
-```
-
----
-
-## SOURCE.md schema
-
-Each source gets a `SOURCE.md` with a YAML front-matter block followed by
-human-readable notes. The YAML block is the contract for agent use.
-
-```yaml
----
-id: rki_geda_2022
-name: "RKI GEDA 2022/2023 — Gesundheit in Deutschland aktuell"
-provider: "Robert Koch-Institut (RKI)"
-url: "https://www.rki.de/geda"
-geographic_level: germany   # munich | bavaria | germany | europe
-population: adults_18plus
-age_range: [18, 99]
-tobacco_topics:
-  - smoking_prevalence
-  - daily_vs_occasional_smoking
-  - quit_attempts
-  - e-cigarette_use
-years_available: [2022, 2023]
-update_frequency: biennial
-data_format: csv            # csv | excel | api | pdf | spss
-access_method: direct_download
-license: "dl-de/by-2-0"    # or "unknown", "open", etc.
-language: de
-sample_questions:
-  - "What share of adults in Germany smoke daily?"
-  - "How many smokers attempted to quit in the past 12 months?"
-fetch_script: sources/rki_geda/fetch.py
-notes: >
-  Representative sample of ~23,000 adults. Weights provided.
-  Munich-level breakdowns not available; Bavarian subsample possible.
----
-```
-
----
-
-## Python package interface
-
-```python
-from tobacco_gateway import fetch, query
-
-# Fetch a specific source into a pandas DataFrame
-df = fetch("rki_geda_2022")
-
-# Ask which sources can answer a question
-sources = query("e-cigarette use trend by age group in Bavaria")
-# → returns ranked list of source IDs with relevance notes
-
-# Fetch all available sources to local cache
-fetch("*")
-```
-
-The `query()` function in v1 will be keyword-based (matching against
-`tobacco_topics` and `sample_questions` in SOURCE.md). In a later version it
-can be backed by an embedding-based search or an LLM.
-
----
-
-## Data hosting strategy
-
-Raw data is **not** stored in the repository.
-
-| Scenario | Approach |
-|---|---|
-| Data available via stable URL | `fetch.py` downloads directly; cached in `data/` (gitignored) |
-| Data requires clicking through a form | Document steps in SOURCE.md; fetch.py automates where possible |
-| Processed / normalized snapshots | Upload to **Zenodo** with DOI; link from SOURCE.md |
-
-**Why Zenodo over OSF or hosting in GitHub?**
-- Free, no account required to download
-- DOIs make data citable
-- 50 GB per record
-- GitHub integration (auto-archive releases)
-- Good programmatic access (REST API)
-
----
-
-## Target data sources (to be discovered and verified)
-
-The following are candidates; each needs a SOURCE.md once confirmed accessible.
-
-### Germany-level
-| Source | Provider | Key topics |
-|---|---|---|
-| GEDA (Gesundheit in Deutschland aktuell) | RKI | Smoking prevalence, quit attempts, e-cig |
-| KiGGS (children/youth health) | RKI | Youth tobacco initiation |
-| BZgA Drogenaffinitätsstudie | BZgA | Youth smoking & e-cig trends |
-| BZgA Rauchverhalten Erwachsene | BZgA | Adult smoking behavior |
-| DEBRA (Deutsche Befragung zum Rauchverhalten) | Univ. Leipzig / Surv. | Quit intent, e-cig prevalence |
-| Microcensus (Mikrozensus) | Destatis | Smoking by region, age, income |
-| Eurobarometer (Special/Standard) | EU Commission | Cross-country; Germany breakdowns |
-| ITC Germany Survey | ITC Project | Policy response, quit attempts |
-
-### Bavaria-level
-| Source | Provider | Key topics |
-|---|---|---|
-| Gesundheitsatlas Bayern | LGL Bayern | Regional health indicators incl. smoking |
-| Bavarian State Health Survey (BGS) | LGL Bayern | Smoking prevalence by district |
-| Bayerisches Landesamt für Statistik | StaBa Bayern | Microcensus Bavaria |
-
-### Munich-level
-| Source | Provider | Key topics |
-|---|---|---|
-| Münchner Gesundheitsbefragung | Gesundheitsreferat München | Local smoking data |
-| Munich health reporting (Gesundheitsbericht) | Landeshauptstadt München | Periodic reports; may include tobacco |
-
----
+See README.md (kept in sync). Key additions since v0.1: `dataset/`, `docs/`, `tobacco_gateway/schema.py`,
+`tobacco_gateway/indicators.py`, `sources/*/extract.py`, `sources/*/curated.csv`, `tests/`,
+`.github/workflows/`.
 
 ## Phased roadmap
 
-### Phase 1 — Foundation (current)
-- [x] Write project plan (this file)
-- [ ] Create GitHub repository
-- [ ] Write README and contributing guide
-- [ ] Implement `tobacco_gateway` package skeleton
-- [ ] Add 2–3 well-documented sources end-to-end (GEDA + BZgA as starting points)
+### Phase 1 — Foundation ✅
+- [x] Project plan, README, package skeleton (`fetch`, `query`, `normalize`)
+- [x] 13 sources with SOURCE.md + fetch.py; INDEX.md; example notebook
 
-### Phase 2 — Source coverage
-- [ ] Survey all candidate sources; confirm accessibility
-- [ ] Write SOURCE.md for each confirmed source
-- [ ] Implement fetch.py per source
-- [ ] Notebook: worked examples for 3–5 representative questions
+### Phase 2 — Source coverage ✅ (partly superseded)
+- [x] Survey candidate sources and access conditions (SOURCES_RESEARCH.md)
+- [x] Verified live downloads: Destatis Mikrozensus 2017 workbook; LGL and Munich PDFs
+- [x] Discovered RKI open data on GitHub/Zenodo (GBE NCD indicators, Diabetes-Surveillance, GEDA 2019/2020 aggregates) — CC BY 4.0, machine-readable, Bundesland level. These replace the earlier "GEDA cannot be scraped" dead end.
 
-### Phase 3 — Agent interface
-- [ ] Implement `query()` with keyword matching
-- [ ] Publish INDEX.md in a machine-readable format (JSON/YAML mirror)
-- [ ] (Optional) Embed SOURCE.md summaries for semantic search
+### Phase 3 — Agent interface ✅
+- [x] `query()` keyword matching over SOURCE.md
+- [x] Machine-readable catalog (`docs/data/catalog.json`, `docs/data/sources.json`)
 
-### Phase 4 — Data snapshots (optional)
-- [ ] Normalize and upload processed datasets to Zenodo
-- [ ] Link Zenodo DOIs from SOURCE.md files
+### Phase 4 — Harmonized dataset and web interface ✅ (2026-09-02)
+- [x] Schema + indicator catalog with German labels and keywords
+- [x] Extractors: `rki_gbe_ncd`, `rki_diabetes_surveillance`, `destatis_mikrozensus`
+- [x] Curated figures with page references: `bgs_bayern` (Suchtmonitoring Bayern 2021), `muenchen_gesundheitsbefragung` (2016)
+- [x] `scripts/build_dataset.py` with validation; 4,800 rows across 18 indicators
+- [x] Python API: `load_indicators()`, `select_indicators()`, `answer()`
+- [x] Website (`docs/`): question box with examples, explorer (indicator, area, breakdown, source, year, sex, standardization), answer text, SVG line/bar charts and stat tiles with tooltips, table, CSV export, shareable links, source catalogue, API section; light/dark theme; mobile layout
+- [x] Tests (schema, spot checks against published figures, question engine, catalogue) and CI
+- [x] Monthly refresh workflow that rebuilds from upstream and opens a pull request
 
----
+### Phase 5 — Coverage gaps (next)
+- [ ] **E-cigarettes / heated tobacco time series.** DEBRA factsheets (PDF) 2016–present, GEDA 2022/2023 fact sheets (Journal of Health Monitoring), BZgA Drogenaffinität reports: transcribe key figures into `curated.csv` with page references, or parse PDF tables with pdfplumber where layouts are stable.
+- [ ] **Munich, second wave.** Münchner Gesundheitsbefragung 2021 report (Stadtbezirk breakdown if published); Gesundheitsbericht München with smoking figures — the 2015 file currently cached is the "Älter werden in München" study and holds no smoking data.
+- [ ] **District level Bavaria.** Gesundheitsatlas Bayern (LGL) manual Excel export → `curated.csv`/`extract.py`; Mikrozensus 2013/2017 by Regierungsbezirk via GENESIS Bayern (login).
+- [ ] **Historical Mikrozensus (1999–2013) for Germany and Bavaria** from older Destatis publications or GBE-Bund tables, to extend the trend before 2017.
+- [ ] **Eurobarometer (GESIS, free login):** e-cigarette and heated tobacco prevalence for Germany 2017/2020 from microdata (pyreadstat).
+- [ ] Publish the site (enable GitHub Pages from `docs/`), add the real repository URL in README/site, and register the dataset on Zenodo for a DOI.
 
-## Open questions
+### Phase 6 — Optional
+- [ ] LLM-backed free-form answers on top of `catalog.json` + `indicators.json` (serverless function with an API key)
+- [ ] Embedding-based source search
+- [ ] Bilingual UI (English labels stored next to German ones in the catalog)
 
-1. **SPSS/Stata files** — Include `pyreadstat` as a dependency. Converting to CSV
-   on fetch would discard variable labels, value labels, and missing-value
-   metadata that downstream analyses may need; `pyreadstat` preserves all of
-   that and returns a pandas DataFrame directly. Add `pyreadstat` to
-   `pyproject.toml`; `fetch.py` scripts should read `.sav`/`.dta` with
-   `pyreadstat.read_sav` / `pyreadstat.read_dta` and return a labeled DataFrame.
+## Open questions (resolved)
 
-2. **Microzensus historical data** — Yes, include. Although smoking questions were
-   dropped after 2017, the 2013–2017 waves provide the only district-level
-   smoking-prevalence time series for Bavaria and Munich. Mark the source with
-   `status: historical` in SOURCE.md and note the cutoff year explicitly.
-
-3. **Caching behaviour** — `fetch.py` scripts always re-download; no caching by
-   default. This keeps the code simple and ensures data freshness. Users who
-   want to avoid repeated downloads can wrap calls in their own logic or use
-   `scripts/fetch_all.py` once and work from `data/` locally.
+1. **SPSS/Stata files** — keep `pyreadstat` for microdata sources (Eurobarometer, KiGGS PUF).
+2. **Mikrozensus historical data** — include; marked `status: historical`.
+3. **Caching** — `fetch.py` caches raw files in `data/`; `refresh=True` re-downloads. The build is reproducible from cache.
+4. **Where do numbers from PDFs live?** — in `sources/<id>/curated.csv`, one row per value, with page and figure/table reference; validated like extracted rows.

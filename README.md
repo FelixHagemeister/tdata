@@ -1,123 +1,150 @@
 # Tobacco Data Gateway
 
-A structured entry point to publicly available tobacco-related datasets for **Munich → Bavaria → Germany**.
+Offene Daten zum Rauchen, zu E-Zigaretten und Tabakfolgen für **München → Bayern → Deutschland**,
+harmonisiert nach Geschlecht, Alter, Bildung, Region und Zeit – mit Antworten in Text und Grafik.
 
-Usable by humans (browse docs, run scripts) and AI agents (query structured metadata, call fetch functions).
+**Website:** https://felixhagemeister.github.io/tdata/ (GitHub Pages aus `docs/`)
+
+Drei Zugänge zu denselben Daten:
+
+| Zugang | Für wen | Wo |
+|---|---|---|
+| Website mit Frage-Box, Explorer, Grafiken, Tabellen, CSV-Export | Journalist:innen, Forschung, Think-Tanks, NGOs | `docs/` |
+| Harmonisierter Datensatz (eine Zeile je Wert, mit Quelle, Tabelle und Seite) | Analysen in R, Python, Excel; KI-Agenten | `dataset/indicators.csv`, `docs/data/*.json` |
+| Python-Paket `tobacco_gateway` | Skripte und Notebooks; Rohdaten-Abruf je Quelle | `tobacco_gateway/`, `sources/` |
 
 ---
 
-## Quick start
+## Schnellstart
 
 ```bash
+python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
 ```python
-from tobacco_gateway import fetch, query
+from tobacco_gateway import answer, load_indicators, select_indicators, fetch, query
 
-# Which sources cover e-cigarette use in Bavaria?
-results = query("e-cigarette use trend in Bavaria")
-for r in results:
-    print(r.source_id, r.score, r.tobacco_topics)
+# Frage in natürlicher Sprache (deterministisch, keine erfundenen Zahlen)
+a = answer("Wie viele Menschen rauchen in Bayern?")
+print(a.text)        # "Rauchen (täglich oder gelegentlich) in Bayern: 20,5 % (2017; Quelle: destatis_mikrozensus). ... 26,4 % (2019/2020; Quelle: rki_gbe_ncd) ..."
+a.data               # die zugrunde liegenden Zeilen als DataFrame
 
-# Fetch Mikrozensus smoking data (free, no registration)
-df = fetch("destatis_mikrozensus")
+# Harmonisierter Datensatz direkt
+df = load_indicators()
+select_indicators(df, "lung_cancer_mortality", geo="Bayern", breakdown="year")
+select_indicators(df, "smoking_current", geo="Deutschland", breakdown="education")
 
-# Fetch district-level Bavaria data (manual export required)
-df = fetch("gesundheitsatlas_bayern")   # reads from data/ cache
+# Rohdaten einer Quelle (Cache in data/, gitignored)
+raw = fetch("rki_gbe_ncd")          # RKI-Indikatorensatz, nur Tabak-Zeilen
+geda = fetch("rki_geda")            # GEDA 2019/2020 Open-Data-Aggregate
 
-# Fetch all sources (results dict with DataFrames or exceptions)
-all_data = fetch("*")
+# Welche Quelle beantwortet eine Frage? (Katalogsuche über SOURCE.md)
+for r in query("E-Zigaretten Jugendliche Bayern")[:3]:
+    print(r.source_id, r.score)
+```
+
+Website lokal ansehen:
+
+```bash
+python -m http.server -d docs 8000   # http://localhost:8000
+```
+
+Datensatz neu bauen (lädt die Upstream-Dateien in `data/` und schreibt `dataset/` und `docs/data/`):
+
+```bash
+python scripts/build_dataset.py
+pytest -q
 ```
 
 ---
 
-## Repository structure
+## Was drin ist
+
+Der harmonisierte Datensatz (`dataset/indicators.csv`, Stand siehe `dataset/build_info.json`) enthält
+u. a.:
+
+| Indikator | Gebiete | Jahre | Dimensionen | Quelle |
+|---|---|---|---|---|
+| Rauchen (täglich oder gelegentlich), ab 18 J. | Deutschland, alle Bundesländer | 2003–2019 | Geschlecht, Alter, Bildung | RKI GBE / Diabetes-Surveillance (GEDA) |
+| Rauchen, täglich, gelegentlich, stark, ehemalig, nie; Rauchbeginn; Rauchart, ab 15 J. | Deutschland, alle Bundesländer | 2017 | Geschlecht, Alter (5-Jahres-Gruppen), Rauchart | Destatis Mikrozensus |
+| Rauchen | München | 2016 | – | Münchner Gesundheitsbefragung |
+| Rauchen | Oberpfalz | 2013, 2017 | – | LGL Suchtmonitoring (Mikrozensus) |
+| Rauchen Schüler:innen 9./10. Klasse (30 Tage, jemals) | Bayern | 2011, 2019 | Geschlecht, Schulart | LGL Suchtmonitoring (ESPAD) |
+| Rauchen 11–17 J. | Deutschland, RKI-Regionen | 2004, 2010, 2015 | Geschlecht, Alter | RKI (KiGGS) |
+| Passivrauchbelastung | Deutschland, RKI-Regionen | 2014, 2019 | Geschlecht, Alter, Bildung | RKI GBE |
+| Lungenkrebs: Inzidenz und Sterblichkeit je 100.000 | Deutschland, alle Bundesländer | 1999–2023 | Geschlecht, Alter, regionale Deprivation | RKI GBE (ZfKD, Todesursachenstatistik) |
+| Tabakkontrollskala | Deutschland und 36 europäische Länder | 2021 | Teilbereiche | RKI GBE (TCS) |
+
+Schema und Regeln: `dataset/README.md`. Indikatorenkatalog mit Definitionen: `tobacco_gateway/schema.py`
+(exportiert nach `docs/data/catalog.json`).
+
+**Bekannte Lücken (Stand 2026-09):** keine E-Zigaretten-/Tabakerhitzer-Zeitreihe (DEBRA, GEDA 2022/23 und
+BZgA veröffentlichen sie nur in PDFs bzw. hinter Datennutzungsvereinbarungen); keine Kreisebene (Gesundheitsatlas
+Bayern nur per manuellem Export); München nur ein Erhebungsjahr. Siehe `PLAN.md`, Phase 5.
+
+---
+
+## Struktur
 
 ```
-tobacco-data-gateway/
-├── README.md
-├── PLAN.md                    # Project plan and guiding principles
-├── SOURCES_RESEARCH.md        # Detailed source research notes
-│
-├── sources/
-│   ├── INDEX.md               # Machine- and human-readable source index
-│   ├── destatis_mikrozensus/
-│   │   ├── SOURCE.md          # Structured metadata (YAML frontmatter)
-│   │   └── fetch.py           # Download + normalize
-│   └── ...                    # 12 more sources
-│
-├── tobacco_gateway/           # Installable Python package
-│   ├── fetch.py               # fetch(source_id) dispatcher
-│   ├── normalize.py           # Shared normalization utilities
-│   └── query.py               # Keyword-based source matching
-│
+tdata/
+├── docs/                      # Website (GitHub Pages): index.html, app.js, engine.js, style.css
+│   └── data/                  # indicators.json/.csv, catalog.json, sources.json (generiert)
+├── dataset/
+│   ├── indicators.csv         # harmonisierter Datensatz (im Repo, generiert)
+│   ├── build_info.json        # Zeilen je Quelle, Build-Datum
+│   └── README.md              # Schema
+├── sources/                   # eine Mappe je Quelle
+│   ├── INDEX.md               # Quellenverzeichnis (YAML + Tabelle)
+│   └── <source_id>/
+│       ├── SOURCE.md          # Metadaten (YAML-Frontmatter) + Notizen
+│       ├── fetch.py           # Rohdaten laden (oder Anleitung, wenn manuell)
+│       ├── extract.py         # optional: Rohdaten -> harmonisiertes Schema
+│       └── curated.csv        # optional: aus PDFs übertragene Werte mit Seitenangabe
+├── tobacco_gateway/           # Python-Paket
+│   ├── schema.py              # Spalten, Indikatorenkatalog, Validierung
+│   ├── indicators.py          # load(), select(), answer()  (Frage-Engine, Python)
+│   ├── fetch.py               # fetch(source_id) Dispatcher
+│   ├── query.py               # Katalogsuche über SOURCE.md
+│   └── curated.py             # Loader für curated.csv
 ├── scripts/
-│   └── fetch_all.py           # Bulk download all automatable sources
-│
-├── notebooks/
-│   └── example_queries.ipynb  # Worked examples
-│
-└── data/                      # gitignored — local cache
+│   ├── build_dataset.py       # Extraktoren ausführen, validieren, dataset/ und docs/data/ schreiben
+│   └── fetch_all.py           # Rohdaten aller Quellen laden
+├── notebooks/example_queries.ipynb
+├── tests/                     # pytest: Schema, Spot-Checks, Frage-Engine, Katalog
+├── .github/workflows/         # CI (Tests) und monatlicher Daten-Refresh als Pull Request
+├── data/                      # gitignored: Rohdaten-Cache
+├── PLAN.md · SOURCES_RESEARCH.md · pyproject.toml
 ```
 
 ---
 
-## Source overview
+## Grundsätze
 
-| Source | Geography | Years | Access |
-|---|---|---|---|
-| [destatis_mikrozensus](sources/destatis_mikrozensus/SOURCE.md) | Germany | 1999–2017 | Free (scrape) |
-| [staba_mikrozensus](sources/staba_mikrozensus/SOURCE.md) | Bavaria | 2009–2017 | Free (GENESIS) |
-| [eurobarometer_tobacco](sources/eurobarometer_tobacco/SOURCE.md) | Germany | 2003–2021 | Free (GESIS registration) |
-| [rki_geda](sources/rki_geda/SOURCE.md) | Germany | 2009–2023 | Aggregate free; microdata DUA |
-| [rki_kiggs](sources/rki_kiggs/SOURCE.md) | Germany | 2006–2017 | Wave 1 PUF free; full DUA |
-| [bzga_drogenaffinitaet](sources/bzga_drogenaffinitaet/SOURCE.md) | Germany | 1973–2021 | GESIS agreement (free) |
-| [bzga_rauchverhalten](sources/bzga_rauchverhalten/SOURCE.md) | Germany | 1997–2021 | PDF free |
-| [debra](sources/debra/SOURCE.md) | Germany | 2016–present | PDF free; microdata negotiation |
-| [itc_germany](sources/itc_germany/SOURCE.md) | Germany | 2016–2022 | DUA (Univ. Waterloo) |
-| [gesundheitsatlas_bayern](sources/gesundheitsatlas_bayern/SOURCE.md) | Bavaria (district) | 2015–2022 | Free (manual export) |
-| [bgs_bayern](sources/bgs_bayern/SOURCE.md) | Bavaria | 2015–2022 | PDF free; microdata LGL |
-| [muenchen_gesundheitsbefragung](sources/muenchen_gesundheitsbefragung/SOURCE.md) | Munich (Stadtbezirk) | 2016–2021 | PDF free; microdata negotiation |
-| [muenchen_gesundheitsbericht](sources/muenchen_gesundheitsbericht/SOURCE.md) | Munich | 2004–2020 | PDF free |
+- **Nur öffentlich zugängliche Daten.** Quellen mit Datennutzungsvereinbarung sind dokumentiert, ihre Werte
+  werden nicht reproduziert.
+- **Keine Rohdaten im Repo, aber ein kuratierter Aggregatdatensatz.** `dataset/indicators.csv` enthält
+  ausschließlich veröffentlichte Kennzahlen mit Quellenangabe (Tabelle, Seite, Datenstand). Rohdateien
+  landen im gitignorierten `data/`.
+- **Keine erfundenen Zahlen.** Die Frage-Engine (`answer()` in Python, `engine.js` im Browser) ist
+  deterministisch: Stichwörter wählen Indikator, Gebiet und Aufschlüsselung; Texte sind Vorlagen über
+  den gefundenen Zeilen. Fehlt etwas, sagt sie das.
+- **Quellen werden nicht stillschweigend gemischt.** Unterschiedliche Erhebungen (Mikrozensus ab 15 J.,
+  GEDA ab 18 J., Telefonsurveys bis 2012) erscheinen als getrennte Reihen mit Hinweis.
+- **Geografische Kaskade:** München vor Bayern vor Deutschland, wo Daten existieren.
 
----
+## Quelle hinzufügen
 
-## Geographic cascade
+1. `sources/<source_id>/SOURCE.md` mit YAML-Frontmatter anlegen (Vorlage: bestehende Quellen).
+2. `fetch.py` mit `fetch(cache_dir="data/") -> pd.DataFrame` schreiben.
+3. Werte in das Schema bringen: `extract.py` mit `extract(cache_dir) -> pd.DataFrame` (Spalten aus
+   `tobacco_gateway.schema.COLUMNS`) **oder** `curated.csv` mit Seitenangabe in `source_ref`.
+4. Eintrag in `sources/INDEX.md`; `python scripts/build_dataset.py`; `pytest`.
 
-The gateway follows a **Munich → Bavaria → Germany** preference hierarchy:
+## Lizenz
 
-| Level | Best source for smoking prevalence |
-|---|---|
-| Munich (district) | `muenchen_gesundheitsbefragung` |
-| Munich (city) | `muenchen_gesundheitsbericht` |
-| Bavaria (district) | `gesundheitsatlas_bayern` |
-| Bavaria (state) | `staba_mikrozensus`, `bgs_bayern` |
-| Germany | `destatis_mikrozensus`, `rki_geda`, `eurobarometer_tobacco` |
-
----
-
-## Guiding principles
-
-- **Public data only** — no sources requiring data-use agreements in automated v1 fetches
-- **No raw data in the repo** — scripts fetch from authoritative sources on demand
-- **No e-cigarette data before ~2014** — smoking modules predating e-cigs lack this variable
-- **Mikrozensus smoking discontinued after 2017** — mark these sources as `status: historical`
-
----
-
-## Data hosting
-
-Raw data is not stored in this repository. Local cache lives in `data/` (gitignored).
-
-For sources requiring registration or data-use agreements, `fetch.py` raises
-a `FileNotFoundError` with step-by-step download instructions.
-
----
-
-## Contributing
-
-Add a new source:
-1. Create `sources/<source_id>/SOURCE.md` with the standard YAML frontmatter (see existing examples)
-2. Create `sources/<source_id>/fetch.py` with a `fetch(cache_dir="data/") -> pd.DataFrame` function
-3. Add an entry to `sources/INDEX.md`
+Code: MIT. Daten: jeweils Lizenz der Quelle – RKI-Indikatoren CC BY 4.0, Destatis Datenlizenz
+Deutschland – Namensnennung 2.0, Berichte des LGL Bayern und der Landeshauptstadt München mit
+Quellenangabe. Bitte beim Weiterverwenden die Originalquelle nennen (in jeder Zeile: `source_id`,
+`source_ref`, `source_url`).

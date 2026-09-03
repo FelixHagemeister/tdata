@@ -1,7 +1,8 @@
 ---
 # Tobacco Data Gateway — Source Index
 # Machine-readable YAML block + human-readable table below.
-# This file is auto-maintained; add new sources by creating SOURCE.md files.
+# Add new sources by creating SOURCE.md files. Sources with extract.py or
+# curated.csv feed the harmonized dataset (dataset/indicators.csv).
 
 sources:
 
@@ -34,12 +35,35 @@ sources:
     gesis_ids: [ZA6925, ZA7780]
     fetch_script: sources/eurobarometer_tobacco/fetch.py
 
+  - id: rki_gbe_ncd
+    name: "RKI GBE — Indikatoren zu nichtübertragbaren Erkrankungen"
+    geographic_level: germany
+    granularity: bundesland
+    years: [1999, 2023]
+    status: active
+    access: free  # CC BY 4.0 open data (GitHub/Zenodo)
+    topics: [smoking_prevalence, passive_smoking, lung_cancer_incidence,
+             lung_cancer_mortality, tobacco_control_policy]
+    in_harmonized_dataset: true
+    fetch_script: sources/rki_gbe_ncd/fetch.py
+
+  - id: rki_diabetes_surveillance
+    name: "RKI Diabetes-Surveillance — Indikator Rauchen"
+    geographic_level: germany
+    granularity: bundesland
+    years: [2003, 2004, 2009, 2010, 2012, 2015, 2019]
+    status: active
+    access: free  # CC BY 4.0 open data (GitHub/Zenodo)
+    topics: [smoking_prevalence, youth_smoking_initiation, smoking_trend]
+    in_harmonized_dataset: true
+    fetch_script: sources/rki_diabetes_surveillance/fetch.py
+
   - id: rki_geda
     name: "RKI GEDA — Gesundheit in Deutschland aktuell"
     geographic_level: germany
     years: [2009, 2010, 2012, 2015, 2020, 2023]
     status: active
-    access: aggregate_free__microdata_dua
+    access: open_data_aggregates__microdata_dua  # GEDA 2019/2020 aggregates on GitHub, CC BY 4.0
     topics: [smoking_prevalence, quit_attempts, quit_intention,
              e-cigarette_use, heated_tobacco_products, passive_smoking]
     fetch_script: sources/rki_geda/fetch.py
@@ -143,10 +167,12 @@ sources:
 
 | ID | Name | Geography | Years | Access | Key topics |
 |---|---|---|---|---|---|
-| destatis_mikrozensus | Mikrozensus Destatis | Germany | 1999–2017 | Free | Prevalence, trend |
+| destatis_mikrozensus | Mikrozensus Destatis | Germany, Bundesländer | 1999–2017 | Free | Prevalence 2017 by age, sex, state, product |
 | staba_mikrozensus | Mikrozensus Bayern | Bavaria | 2009–2017 | Free | Prevalence, regional |
 | eurobarometer_tobacco | Eurobarometer EB 458/506 | Germany | 2003–2021 | Free (GESIS reg.) | E-cig, HTP, quit behavior |
-| rki_geda | RKI GEDA | Germany | 2009–2023 | Aggregate free; micro DUA | Full adult tobacco profile |
+| rki_gbe_ncd | RKI GBE NCD-Indikatoren | Germany, Bundesländer | 1999–2023 | Free (CC BY 4.0) | Prevalence by state/education, lung cancer, tobacco control |
+| rki_diabetes_surveillance | RKI Diabetes-Surveillance | Germany, Bundesländer | 2003–2019 | Free (CC BY 4.0) | Adult trend since 2003, youth (KiGGS) |
+| rki_geda | RKI GEDA | Germany | 2009–2023 | Aggregates free (open data); micro DUA | Full adult tobacco profile |
 | rki_kiggs | RKI KiGGS | Germany | 2006–2017 | Wave 1 PUF free; full DUA | Youth initiation |
 | bzga_drogenaffinitaet | BZgA Drogenaffinität | Germany | 1973–2021 | GESIS agreement | Youth long-run trend |
 | bzga_rauchverhalten | BZgA Rauchverhalten | Germany | 1997–2021 | PDF free | Adult trend |

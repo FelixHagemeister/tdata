@@ -1,0 +1,78 @@
+{
+  "built": "2026-09-02",
+  "rows": 4804,
+  "sources": {
+    "bgs_bayern": {
+      "rows": 17,
+      "indicators": [
+        "htp_current",
+        "passive_smoking",
+        "smoking_current",
+        "smoking_daily",
+        "youth_smoking_30d",
+        "youth_smoking_current",
+        "youth_smoking_ever"
+      ],
+      "years": [
+        1990,
+        2019
+      ]
+    },
+    "destatis_mikrozensus": {
+      "rows": 590,
+      "indicators": [
+        "smoking_current",
+        "smoking_daily",
+        "smoking_former",
+        "smoking_heavy",
+        "smoking_never",
+        "smoking_occasional",
+        "smoking_product_share",
+        "smoking_start_age"
+      ],
+      "years": [
+        2017,
+        2017
+      ]
+    },
+    "muenchen_gesundheitsbefragung": {
+      "rows": 5,
+      "indicators": [
+        "smoking_current",
+        "smoking_daily",
+        "smoking_former",
+        "smoking_never",
+        "smoking_occasional"
+      ],
+      "years": [
+        2016,
+        2016
+      ]
+    },
+    "rki_diabetes_surveillance": {
+      "rows": 155,
+      "indicators": [
+        "smoking_current",
+        "youth_smoking_current"
+      ],
+      "years": [
+        2003,
+        2015
+      ]
+    },
+    "rki_gbe_ncd": {
+      "rows": 4037,
+      "indicators": [
+        "lung_cancer_incidence",
+        "lung_cancer_mortality",
+        "passive_smoking",
+        "smoking_current",
+        "tobacco_control_score"
+      ],
+      "years": [
+        1999,
+        2023
+      ]
+    }
+  }
+}

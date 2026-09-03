@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tobacco Data Gateway – Tabakdaten für München, Bayern und Deutschland</title>
+<meta name="description" content="Offene Daten zum Rauchen, zu E-Zigaretten und Tabakfolgen für München, Bayern und Deutschland – nach Geschlecht, Alter, Bildung, Region und Zeit. Mit Antworten in Text und Grafik.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232a78d6'/%3E%3Cpath d='M7 22h12v3H7zM19 22h6v3h-6z' fill='%23fff'/%3E%3Cpath d='M10 17c0-3 4-3 4-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span><strong>Tobacco Data Gateway</strong><small>Tabakdaten für München · Bayern · Deutschland</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Seitennavigation">
+      <a href="#frage">Fragen</a>
+      <a href="#explorer">Explorer</a>
+      <a href="#quellen">Quellen</a>
+      <a href="#api">Daten &amp; API</a>
+      <a href="https://github.com/FelixHagemeister/tdata" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap" id="frage">
+    <h1>Wie viele Menschen rauchen – und wo?</h1>
+    <p class="lede">Ein offener Zugang zu amtlichen und wissenschaftlichen Daten über Tabakkonsum und seine Folgen. Stellen Sie eine Frage oder wählen Sie Indikator, Gebiet und Aufschlüsselung im Explorer. Jede Zahl ist mit Quelle, Tabelle und Erhebungsjahr belegt.</p>
+    <form class="ask" id="ask-form" role="search">
+      <label for="question" class="visually-hidden">Frage</label>
+      <input id="question" type="search" autocomplete="off" placeholder="z. B. Wie viele Menschen rauchen in Bayern?">
+      <button type="submit">Antwort suchen</button>
+    </form>
+    <div class="chips" id="examples" aria-label="Beispielfragen">
+      <button type="button" class="chip">Wie viele Menschen rauchen in Bayern?</button>
+      <button type="button" class="chip">Rauchen nach Bildung in Deutschland</button>
+      <button type="button" class="chip">Entwicklung des Rauchens in Deutschland seit 2003</button>
+      <button type="button" class="chip">Rauchen nach Altersgruppen 2017</button>
+      <button type="button" class="chip">Rauchen im Vergleich der Bundesländer</button>
+      <button type="button" class="chip">Lungenkrebs-Sterblichkeit in Bayern im Zeitverlauf</button>
+      <button type="button" class="chip">Rauchen in München</button>
+      <button type="button" class="chip">Rauchen bei Jugendlichen in Bayern</button>
+    </div>
+    <div class="kpis" id="kpis" aria-live="polite"></div>
+  </section>
+
+  <section class="wrap" id="explorer">
+    <div class="section-head">
+      <h2>Explorer</h2>
+      <p class="muted">Indikator, Gebiet und Darstellung wählen. Die Antwort in Textform, die Grafik und die Tabelle beziehen sich immer auf dieselbe Auswahl.</p>
+    </div>
+    <div class="controls" id="controls">
+      <label>Indikator <select id="sel-indicator"></select></label>
+      <label>Gebiet <select id="sel-geo"></select></label>
+      <label>Darstellung <select id="sel-breakdown"></select></label>
+      <label>Quelle <select id="sel-source"></select></label>
+      <label id="lbl-year">Jahr <select id="sel-year"></select></label>
+      <label id="lbl-sex">Geschlecht <select id="sel-sex">
+        <option value="gesamt">insgesamt</option><option value="männlich">Männer</option><option value="weiblich">Frauen</option></select></label>
+      <label class="check" id="lbl-std"><input type="checkbox" id="chk-std"> altersstandardisiert</label>
+    </div>
+
+    <div class="answer card" id="answer" aria-live="polite">
+      <h3>Antwort</h3>
+      <p id="answer-text"></p>
+    </div>
+
+    <figure class="card chart-card">
+      <figcaption>
+        <div class="chart-title" id="chart-title"></div>
+        <div class="chart-sub muted" id="chart-sub"></div>
+      </figcaption>
+      <div class="chart-wrap" id="chart"></div>
+      <div class="legend" id="legend"></div>
+      <div class="chart-actions">
+        <button type="button" class="btn" id="btn-csv">CSV herunterladen</button>
+        <button type="button" class="btn" id="btn-link">Link kopieren</button>
+        <button type="button" class="btn" id="btn-table" aria-expanded="true">Tabelle ausblenden</button>
+      </div>
+    </figure>
+    <div class="table-wrap card" id="table-wrap">
+      <table id="table"><thead></thead><tbody></tbody></table>
+    </div>
+    <p class="muted small" id="chart-note"></p>
+  </section>
+
+  <section class="wrap" id="quellen">
+    <div class="section-head">
+      <h2>Quellen</h2>
+      <p class="muted">Alle Datenquellen mit Zugangsweg und Abdeckung. Grün markierte Quellen liefern Werte für den harmonisierten Datensatz; die übrigen sind dokumentiert und über das Python-Paket abrufbar oder erfordern eine Datennutzungsvereinbarung.</p>
+    </div>
+    <div class="source-grid" id="sources"></div>
+  </section>
+
+  <section class="wrap" id="api">
+    <div class="section-head">
+      <h2>Daten &amp; API</h2>
+      <p class="muted">Der harmonisierte Datensatz ist eine flache Tabelle: ein Wert je Zeile mit Indikator, Gebiet, Jahr, Geschlecht, Altersgruppe, Bildung, weiterem Merkmal, Konfidenzintervall und Quellenangabe. Für Menschen als CSV, für Programme und KI-Agenten als JSON.</p>
+    </div>
+    <div class="api-grid">
+      <div class="card">
+        <h3>Direkte Downloads</h3>
+        <ul class="plain">
+          <li><a href="data/indicators.csv">indicators.csv</a> – alle Werte (CSV, UTF-8)</li>
+          <li><a href="data/indicators.json">indicators.json</a> – dieselben Werte, kompakt (Spalten + Zeilen)</li>
+          <li><a href="data/catalog.json">catalog.json</a> – Indikatorenkatalog mit Definitionen und Suchbegriffen</li>
+          <li><a href="data/sources.json">sources.json</a> – Quellenverzeichnis (Metadaten aller SOURCE.md-Dateien)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Python</h3>
+<pre><code>pip install git+https://github.com/FelixHagemeister/tdata
+
+from tobacco_gateway import answer, load_indicators, select_indicators
+df = load_indicators()
+sub = select_indicators(df, "smoking_current", geo="Bayern", breakdown="sex")
+print(answer("Wie viele Menschen rauchen in Bayern?").text)</code></pre>
+      </div>
+      <div class="card">
+        <h3>Für KI-Agenten</h3>
+        <p>Der Katalog nennt zu jedem Indikator Definition, Einheit und Suchbegriffe. Ein Agent liest <code>catalog.json</code>, wählt <code>indicator_id</code> und Gebiet und filtert <code>indicators.json</code>. Quellen ohne freie Daten stehen mit Zugangsweg in <code>sources.json</code>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Datenstand: <span id="built"></span>. Quellen: Robert Koch-Institut (CC BY 4.0), Statistisches Bundesamt (Datenlizenz Deutschland – Namensnennung 2.0), Bayerisches Landesamt für Gesundheit und Lebensmittelsicherheit, Landeshauptstadt München. Code: MIT. Dieses Angebot ist ein unabhängiges Forschungsprojekt und keine amtliche Statistik.</p>
+  </div>
+</footer>
+
+<div class="tooltip" id="tooltip" role="status" hidden></div>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
