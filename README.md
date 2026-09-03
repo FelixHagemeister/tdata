@@ -2,6 +2,7 @@
 
 Offene Daten zum Rauchen, zu E-Zigaretten und Tabakfolgen für **München → Bayern → Deutschland**,
 harmonisiert nach Geschlecht, Alter, Bildung, Region und Zeit – mit Antworten in Text und Grafik.
+Ziel des Projekts ist es, Übersicht über vorhandene Datenquellen zu geben, um eine evidenzbasierte Grundlage für Präventionsmaßnahmen und gesundheitspolitische Entscheidungen zu bieten.
 
 **Website:** https://felixhagemeister.github.io/tdata/ (GitHub Pages aus `docs/`)
 
